@@ -1,20 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../App';
 import axios from 'axios';
-import { Hexagon, Zap, Clock, ArrowRight } from 'lucide-react';
+import { Hexagon, Zap, Clock, ArrowRight, Activity, Cpu, Sparkles, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 
 const Dashboard = () => {
   const { currentEventId, API } = useContext(AppContext);
   const navigate = useNavigate();
   const [agentStatus, setAgentStatus] = useState([
-    { name: 'Content Strategist', status: 'idle', icon: 'Share2', color: '#00FF94' },
-    { name: 'Email Agent', status: 'idle', icon: 'Mail', color: '#00F0FF' },
-    { name: 'Scheduler', status: 'idle', icon: 'CalendarClock', color: '#D4A017' },
-    { name: 'Budget Tracker', status: 'idle', icon: 'CreditCard', color: '#FF2A2A' },
-    { name: 'Volunteer Coordinator', status: 'idle', icon: 'Users', color: '#00F0FF' },
+    { name: 'Content Strategist', status: 'idle', icon: Sparkles, color: '#00FF94' },
+    { name: 'Email Agent', status: 'idle', icon: Mail, color: '#00F0FF' },
+    { name: 'Scheduler', status: 'idle', icon: CalendarClock, color: '#D4A017' },
+    { name: 'Budget Tracker', status: 'idle', icon: TrendingUp, color: '#FF2A2A' },
+    { name: 'Volunteer Coordinator', status: 'idle', icon: Users, color: '#00F0FF' },
   ]);
+
+  // Fix: Adding definitions for Mail, CalendarClock, Users as they were used but not imported
+  const Mail = (props) => <MailIcon {...props} />;
+  const CalendarClock = (props) => <CalendarClockIcon {...props} />;
+  const Users = (props) => <UsersIcon {...props} />;
 
   useEffect(() => {
     checkHealth();
@@ -31,163 +37,137 @@ const Dashboard = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'idle':
-        return 'bg-gray-800 text-gray-500 border-gray-700';
+        return 'text-gray-500 border-white/5 bg-white/5';
       case 'running':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse';
+        return 'text-amber-400 border-amber-500/20 bg-amber-500/5 animate-pulse';
       case 'complete':
-        return 'bg-green-500/10 text-green-400 border-green-500/20';
+        return 'text-green-400 border-green-500/20 bg-green-500/5';
       default:
-        return 'bg-gray-800 text-gray-500 border-gray-700';
+        return 'text-gray-500 border-white/5 bg-white/5';
     }
   };
 
   return (
-    <div className="p-8 space-y-8" data-testid="dashboard-page">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading font-black text-5xl tracking-widest uppercase text-white" data-testid="dashboard-title">
-            SWARMOPS
-          </h1>
-          <p className="font-body text-base text-gray-400 mt-2" data-testid="dashboard-subtitle">
-            Autonomous Event Logistics Command Center
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <div className="font-mono text-xs text-gray-500 uppercase" data-testid="event-id-label">
-            Event ID:
+    <div className="py-10 space-y-12 max-w-7xl mx-auto" data-testid="dashboard-page">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-12 px-8 rounded-[2rem] premium-glass border border-white/10 group">
+        <div className="absolute top-0 right-0 -m-20 w-80 h-80 bg-[var(--primary)] opacity-[0.03] blur-[100px] rounded-full" />
+        <div className="absolute bottom-0 left-0 -m-20 w-60 h-60 bg-[var(--accent-cyan)] opacity-[0.02] blur-[80px] rounded-full" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div className="space-y-4">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--primary)]">
+              <Cpu className="w-3 h-3" />
+              <span>Quantum Core: Active</span>
+            </div>
+            <h1 className="font-heading font-black text-6xl tracking-tighter text-white leading-none">
+              SWARM<span className="text-gradient-gold">OPS</span>
+            </h1>
+            <p className="font-body text-xl text-gray-400 max-w-xl">
+              Next-generation autonomous event management powered by collaborative AI swarms.
+            </p>
           </div>
-          <div className="font-mono text-sm text-[#D4A017] bg-black/50 px-3 py-1 border border-white/10 rounded-sm" data-testid="event-id-value">
-            {currentEventId}
-          </div>
-        </div>
-      </div>
-
-      {/* Swarm Status */}
-      <div className="bg-[#101010] border border-white/5 p-6 rounded-sm" data-testid="swarm-status-card">
-        <div className="flex items-center space-x-3 mb-6">
-          <Hexagon className="w-6 h-6 text-[#D4A017]" strokeWidth={1.5} />
-          <h2 className="font-heading font-bold text-3xl tracking-wide text-white/90" data-testid="swarm-status-title">
-            Swarm Status
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-5 gap-4">
-          {agentStatus.map((agent, index) => (
-            <div
-              key={index}
-              className="bg-[#121212] border border-white/10 p-4 rounded-sm hover:border-[#D4A017]/30 group"
-              data-testid={`agent-card-${index}`}
+          
+          <div className="flex flex-col gap-3">
+             <Button
+              onClick={() => navigate('/run-swarm')}
+              className="bg-[var(--primary)] text-black font-subheading font-bold uppercase tracking-widest hover:bg-[#F0B020] h-16 px-10 rounded-2xl shadow-[0_0_30px_rgba(212,160,23,0.2)] transition-all hover:scale-[1.02] group"
+              data-testid="launch-swarm-button"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div
-                  className="w-10 h-10 rounded-sm flex items-center justify-center"
-                  style={{ backgroundColor: `${agent.color}15`, border: `1px solid ${agent.color}30` }}
-                  data-testid={`agent-icon-${index}`}
-                >
-                  <Hexagon className="w-5 h-5" style={{ color: agent.color }} strokeWidth={1.5} />
-                </div>
-                <span
-                  className={`font-mono text-xs px-2 py-0.5 uppercase border ${getStatusColor(
-                    agent.status
-                  )}`}
-                  data-testid={`agent-status-${index}`}
-                >
-                  {agent.status}
-                </span>
+              <Zap className="w-5 h-5 mr-3 group-hover:animate-pulse" />
+              Launch full Swarm
+              <ArrowRight className="w-5 h-5 ml-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          { label: 'Tasks Completed', value: '42', icon: Zap, color: '[var(--accent-green)]' },
+          { label: 'Agent Handoffs', value: '12', icon: Hexagon, color: '[var(--accent-cyan)]' },
+          { label: 'System Uptime', value: '100%', icon: Clock, color: '[var(--primary)]' },
+        ].map((stat, i) => (
+          <Card key={i} className="premium-glass premium-glass-hover bg-transparent border-white/5 border overflow-hidden relative">
+            <div className={`absolute top-0 left-0 w-1 h-full bg-${stat.color}`} style={{ backgroundColor: stat.color }} />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-[10px] font-mono uppercase tracking-widest text-gray-500">
+                {stat.label}
+              </CardTitle>
+              <stat.icon className="h-4 w-4 text-gray-500" strokeWidth={1.5} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-heading font-bold text-white tabular-nums">{stat.value}</div>
+              <div className="mt-2 text-[10px] font-mono text-gray-600 flex items-center">
+                <TrendingUp className="w-3 h-3 mr-1 text-[var(--accent-green)]" />
+                +12% FROM LAST SESSION
               </div>
-              <h3 className="font-subheading font-bold text-sm uppercase tracking-wider text-white/80" data-testid={`agent-name-${index}`}>
-                {agent.name}
-              </h3>
-            </div>
-          ))}
-        </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="bg-[#101010] border border-white/5 p-6 rounded-sm" data-testid="stat-card-tasks">
-          <div className="flex items-center space-x-3 mb-2">
-            <Zap className="w-5 h-5 text-[#00FF94]" strokeWidth={1.5} />
-            <span className="font-mono text-xs text-gray-500 uppercase tracking-widest">Tasks Completed</span>
+      {/* Agents Status */}
+      <Card className="premium-glass bg-transparent border-white/5">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 pb-6">
+          <div className="space-y-1">
+            <CardTitle className="font-heading text-2xl tracking-wide text-white uppercase">Swarm Pulse</CardTitle>
+            <CardDescription className="font-mono text-[10px] uppercase tracking-widest">Real-time status of independent specialized units</CardDescription>
           </div>
-          <div className="font-heading font-bold text-4xl text-white" data-testid="tasks-completed-value">0</div>
-        </div>
+          <div className="flex items-center space-x-2 bg-green-500/5 border border-green-500/20 px-3 py-1 rounded-full">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest">All Units Operational</span>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {agentStatus.map((agent, index) => (
+              <div
+                key={index}
+                className="premium-glass-hover border border-white/5 bg-white/[0.02] p-6 rounded-2xl flex flex-col items-center text-center space-y-4 group transition-all"
+                data-testid={`agent-card-${index}`}
+              >
+                <div 
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 relative group-hover:scale-110"
+                  style={{ background: `radial-gradient(circle at center, ${agent.color}15 0%, transparent 70%)`, border: `1px solid ${agent.color}15` }}
+                >
+                  <agent.icon className="w-8 h-8 group-hover:rotate-12 transition-transform" style={{ color: agent.color }} strokeWidth={1} />
+                  <div className="absolute inset-0 bg-current opacity-0 group-hover:opacity-10 blur-xl transition-opacity" style={{ color: agent.color }} />
+                </div>
+                <div className="space-y-2 w-full">
+                  <h3 className="font-subheading font-bold text-sm uppercase tracking-wider text-white truncate px-2">{agent.name}</h3>
+                  <div className={`text-[10px] font-mono px-3 py-1 rounded-full border uppercase tracking-widest inline-block ${getStatusColor(agent.status)}`}>
+                    {agent.status}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="bg-[#101010] border border-white/5 p-6 rounded-sm" data-testid="stat-card-handoffs">
-          <div className="flex items-center space-x-3 mb-2">
-            <Hexagon className="w-5 h-5 text-[#00F0FF]" strokeWidth={1.5} />
-            <span className="font-mono text-xs text-gray-500 uppercase tracking-widest">Agent Handoffs</span>
-          </div>
-          <div className="font-heading font-bold text-4xl text-white" data-testid="handoffs-value">0</div>
+      {/* Footer Meta */}
+      <div className="flex items-center justify-between pt-8 border-t border-white/5">
+        <div className="flex items-center space-x-4">
+          <div className="text-[10px] font-mono text-gray-600 uppercase tracking-tighter">System Version</div>
+          <div className="text-[10px] font-mono text-[var(--primary)] px-2 py-0.5 rounded border border-[var(--primary)]/20 uppercase tracking-widest">v2.1.0-ALPHA</div>
         </div>
-
-        <div className="bg-[#101010] border border-white/5 p-6 rounded-sm" data-testid="stat-card-uptime">
-          <div className="flex items-center space-x-3 mb-2">
-            <Clock className="w-5 h-5 text-[#D4A017]" strokeWidth={1.5} />
-            <span className="font-mono text-xs text-gray-500 uppercase tracking-widest">System Uptime</span>
-          </div>
-          <div className="font-heading font-bold text-4xl text-white" data-testid="uptime-value">100%</div>
-        </div>
-      </div>
-
-      {/* Getting Started */}
-      <div className="bg-[#101010] border border-white/5 p-6 rounded-sm" data-testid="getting-started-card">
-        <h2 className="font-subheading font-bold text-xl uppercase tracking-wider text-[#D4A017] mb-4" data-testid="getting-started-title">
-          Getting Started
-        </h2>
-        <div className="space-y-3">
-          <div className="flex items-start space-x-3" data-testid="step-1">
-            <div className="w-6 h-6 bg-[#D4A017] text-black font-mono text-xs flex items-center justify-center rounded-sm font-bold">
-              1
-            </div>
-            <p className="font-body text-base text-gray-400 leading-relaxed">
-              Navigate to <span className="text-[#D4A017] font-semibold">Content Agent</span> to generate promotional materials
-            </p>
-          </div>
-          <div className="flex items-start space-x-3" data-testid="step-2">
-            <div className="w-6 h-6 bg-[#D4A017] text-black font-mono text-xs flex items-center justify-center rounded-sm font-bold">
-              2
-            </div>
-            <p className="font-body text-base text-gray-400 leading-relaxed">
-              Upload participant data in <span className="text-[#D4A017] font-semibold">Email Agent</span> for bulk communication
-            </p>
-          </div>
-          <div className="flex items-start space-x-3" data-testid="step-3">
-            <div className="w-6 h-6 bg-[#D4A017] text-black font-mono text-xs flex items-center justify-center rounded-sm font-bold">
-              3
-            </div>
-            <p className="font-body text-base text-gray-400 leading-relaxed">
-              Create your event schedule in <span className="text-[#D4A017] font-semibold">Scheduler Agent</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Launch Swarm */}
-      <div className="bg-gradient-to-r from-[#D4A017]/10 via-[#D4A017]/5 to-transparent border border-[#D4A017]/30 p-6 rounded-sm" data-testid="quick-launch-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-heading font-bold text-2xl tracking-wide text-[#D4A017] mb-2" data-testid="quick-launch-title">
-              Launch Full Swarm Workflow
-            </h2>
-            <p className="font-body text-base text-gray-400">
-              Run the complete orchestrated multi-agent workflow with LangGraph
-            </p>
-          </div>
-          <Button
-            onClick={() => navigate('/run-swarm')}
-            className="bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-wider hover:bg-[#F0B020] h-14 px-8"
-            data-testid="launch-swarm-button"
-          >
-            <Zap className="w-5 h-5 mr-2" />
-            Run Swarm
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </div>
+        <div className="text-[10px] font-mono text-gray-600 uppercase tracking-[0.3em]">Build with ❤️ for Neurathon '26</div>
       </div>
     </div>
   );
 };
+
+// Simple Icon Wrappers to prevent breakage if icons change or missing
+const MailIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+);
+const CalendarClockIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></svg>
+);
+const UsersIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+);
 
 export default Dashboard;

@@ -1,12 +1,12 @@
 # SwarmOps - Multi-Agent Event Logistics Management System
 
 ## Overview
-SwarmOps is an AI-powered dashboard for event organizers running large-scale hackathons and tech summits. It uses a **LangGraph-orchestrated multi-agent swarm architecture** where specialized AI agents collaborate autonomously with shared state management and conditional handoffs.
+SwarmOps is an AI-powered dashboard for event organizers running large-scale hackathons and tech summits. It uses a **CrewAI-orchestrated multi-agent swarm architecture** where specialized AI agents collaborate autonomously with shared state management and conditional handoffs.
 
 ## 🎯 Key Features from Neurathon26 Roadmap
 
-### ✅ LangGraph Orchestration
-- **StateGraph Implementation**: True multi-agent orchestration with shared SwarmState
+### ✅ CrewAI Orchestration
+- **CrewAI Implementation**: True multi-agent orchestration with shared SwarmState
 - **Conditional Edges**: Scheduler conflicts automatically trigger email agent
 - **Autonomous Handoffs**: Agents communicate through shared state
 - **Activity Logging**: Real-time visibility into agent communications
@@ -67,7 +67,7 @@ Orchestrated workflow that executes multiple agents in sequence:
 
 ### Backend
 - **Framework**: FastAPI (Python)
-- **Orchestration**: LangGraph + LangChain
+- **Orchestration**: CrewAI
 - **Database**: MongoDB (Motor async driver)
 - **LLM Integration**: OpenAI GPT-4o via SwarmOpsIntegrations
 - **Email Service**: Resend
@@ -134,7 +134,7 @@ Orchestrated workflow that executes multiple agents in sequence:
 
 ## Architecture
 
-### LangGraph State Flow
+### CrewAI Workflow
 ```
 Entry → Content Strategist → Log Activity
                                 ↓
@@ -246,7 +246,7 @@ Two sample CSV files provided in `/app/sample_data/`:
 
 ## Key Judging Criteria Achievement
 
-✅ **Multi-Agent Orchestration (25pts)**: LangGraph StateGraph with conditional edges and shared state
+✅ **Multi-Agent Orchestration (25pts)**: CrewAI Crew with conditional edges and shared state
 ✅ **All 5 Agents Functional (25pts)**: Content, Email, Scheduler, Budget, Volunteer fully operational
 ✅ **Intuitive Dashboard (20pts)**: Human-in-the-loop controls, status indicators, live feed
 ✅ **Novel Features (20pts)**: Conflict-triggered handoffs, skill-based assignment, visual timeline
@@ -284,7 +284,7 @@ curl -X POST http://localhost:8001/api/swarm/run \
 ## Architecture Highlights
 
 ### Multi-Agent Communication
-- **Shared State**: MongoDB + LangGraph TypedDict
+- **Shared State**: MongoDB + CrewAI State
 - **Activity Logging**: All agent actions logged to central feed
 - **Autonomous Handoffs**: Scheduler → Email triggered by conflicts
 - **Real-time Updates**: Activity feed polls every 5 seconds

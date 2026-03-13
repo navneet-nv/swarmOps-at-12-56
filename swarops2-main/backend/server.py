@@ -309,24 +309,35 @@ class SwarmRunRequest(BaseModel):
     event_name: str
     raw_prompt: str
     schedule: List[dict] = []
+    target_audience: Optional[str] = None
+    extended_options: Optional[dict] = Field(default_factory=dict)
 
 @api_router.post("/swarm/run")
 async def run_full_swarm(request: SwarmRunRequest):
     """Run the full orchestrated swarm workflow"""
     try:
+        # Construct rich initial state for the orchestrator
         initial_state = {
             "event_id": request.event_id,
             "user_id": request.user_id,
             "event_name": request.event_name,
             "raw_prompt": request.raw_prompt,
             "schedule": request.schedule,
-            "target_audience": "tech event attendees"
+            "target_audience": request.target_audience or "general audience",
+            **request.extended_options
         }
         
+        logger.info(f"Initiating swarm for event: {request.event_name} (ID: {request.event_id})")
         result = await swarm_orchestrator.run_swarm(initial_state)
+        
+        # Log final status
+        status = result.get('swarm_status', 'unknown')
+        logger.info(f"Swarm for event {request.event_id} completed with status: {status}")
+        
         return {"success": True, "data": result}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Swarm execution failed for event {request.event_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Swarm execution error: {str(e)}")
 
 # Include the router in the main app
 app.include_router(api_router)

@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../App';
 import axios from 'axios';
-import { CalendarClock, Plus, AlertTriangle } from 'lucide-react';
+import { CalendarClock, Plus, AlertTriangle, Terminal, Clock, MapPin, User, CheckCircle, Zap } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 
 const SchedulerAgent = () => {
   const { currentEventId, userId, API } = useContext(AppContext);
@@ -59,146 +60,201 @@ const SchedulerAgent = () => {
   };
 
   return (
-    <div className="p-8 space-y-8" data-testid="scheduler-agent-page">
-      {/* Header */}
-      <div className="flex items-center space-x-3">
-        <CalendarClock className="w-8 h-8 text-[#D4A017]" strokeWidth={1.5} />
-        <div>
-          <h1 className="font-heading font-bold text-3xl tracking-wide text-white" data-testid="page-title">
-            Scheduler Agent
-          </h1>
-          <p className="font-mono text-xs text-gray-500 uppercase tracking-widest" data-testid="page-subtitle">
-            Automated Schedule Building & Conflict Resolution
-          </p>
+    <div className="py-10 space-y-10 max-w-7xl mx-auto text-white" data-testid="scheduler-agent-page">
+      {/* Page Header */}
+      <div className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-8 rounded-3xl premium-glass">
+        <div className="flex items-center space-x-6">
+          <div className="w-16 h-16 bg-[var(--primary)]/10 rounded-2xl flex items-center justify-center border border-[var(--primary)]/20 shadow-[0_0_20px_rgba(212,160,23,0.1)]">
+            <CalendarClock className="w-8 h-8 text-[var(--primary)]" strokeWidth={1.5} />
+          </div>
+          <div>
+            <h1 className="font-heading font-bold text-4xl tracking-tight text-white" data-testid="page-title">
+              Temporal Engine
+            </h1>
+            <p className="font-mono text-xs text-gray-500 uppercase tracking-[0.3em] mt-1" data-testid="page-subtitle">
+              Automated Timeline Synthesis & Optimization
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* Agent Status */}
-      <div className="bg-[#101010] border border-white/5 p-4 rounded-sm flex items-center justify-between" data-testid="agent-status-bar">
-        <div className="flex items-center space-x-3">
-          <div className={`w-3 h-3 rounded-full ${isProcessing ? 'bg-amber-400 animate-pulse' : 'bg-green-400'}`} data-testid="status-indicator" />
-          <span className="font-mono text-sm text-gray-400" data-testid="status-text">
-            {isProcessing ? 'Building schedule...' : 'Agent ready'}
+        
+        <div className={`px-6 py-2 rounded-full border flex items-center space-x-3 transition-all ${isProcessing ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-green-500/10 border-green-500/20 text-green-500'}`}>
+          <div className={`w-2.5 h-2.5 rounded-full ${isProcessing ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
+          <span className="font-mono text-[10px] font-bold uppercase tracking-widest">
+            {isProcessing ? 'Optimizing Timeline' : 'Engine Synchronized'}
           </span>
         </div>
       </div>
 
-      {/* Add Sessions */}
-      <div className="bg-[#101010] border border-white/5 p-6 rounded-sm space-y-4" data-testid="add-sessions-section">
-        <div className="flex items-center justify-between">
-          <label className="font-subheading font-bold text-xl uppercase tracking-wider text-[#D4A017]" data-testid="sessions-label">
-            Add Sessions
-          </label>
-          <Button
-            onClick={addSession}
-            variant="outline"
-            className="border-white/20 text-white hover:bg-white/5 h-10 px-4"
-            data-testid="add-session-button"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Session
-          </Button>
-        </div>
-
-        <div className="space-y-3">
-          {sessions.map((session, index) => (
-            <div key={index} className="bg-[#121212] border border-white/10 p-4 rounded-sm grid grid-cols-5 gap-3" data-testid={`session-row-${index}`}>
-              <Input
-                placeholder="Session Name"
-                value={session.name}
-                onChange={(e) => updateSession(index, 'name', e.target.value)}
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid={`session-name-${index}`}
-              />
-              <Input
-                placeholder="Speaker"
-                value={session.speaker}
-                onChange={(e) => updateSession(index, 'speaker', e.target.value)}
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid={`session-speaker-${index}`}
-              />
-              <Input
-                placeholder="Duration (min)"
-                type="number"
-                value={session.duration}
-                onChange={(e) => updateSession(index, 'duration', parseInt(e.target.value))}
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid={`session-duration-${index}`}
-              />
-              <Input
-                placeholder="Room"
-                value={session.room}
-                onChange={(e) => updateSession(index, 'room', e.target.value)}
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid={`session-room-${index}`}
-              />
-              <Input
-                placeholder="Preferred Time"
-                value={session.preferred_time}
-                onChange={(e) => updateSession(index, 'preferred_time', e.target.value)}
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid={`session-time-${index}`}
-              />
+      <div className="grid grid-cols-1 gap-10">
+        {/* Session Input Matrix */}
+        <Card className="premium-glass bg-transparent border-white/5 overflow-hidden">
+          <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4 flex flex-row items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Terminal className="w-4 h-4 text-[var(--primary)]" />
+              <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Neural Input Matrix</CardTitle>
             </div>
-          ))}
-        </div>
-
-        <Button
-          onClick={handleCreateSchedule}
-          disabled={isProcessing}
-          className="bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-wider hover:bg-[#F0B020] h-12 px-8"
-          data-testid="create-schedule-button"
-        >
-          {isProcessing ? 'Building...' : 'Build Schedule'}
-        </Button>
-      </div>
-
-      {/* Generated Schedules */}
-      {schedules.length > 0 && (
-        <div className="bg-[#101010] border border-white/5 p-6 rounded-sm space-y-4" data-testid="schedules-section">
-          <h2 className="font-subheading font-bold text-xl uppercase tracking-wider text-[#D4A017]" data-testid="schedules-title">
-            Generated Schedules
-          </h2>
-          {schedules.map((schedule, scheduleIndex) => (
-            <div key={scheduleIndex} className="bg-[#121212] border border-white/10 p-4 rounded-sm" data-testid={`schedule-${scheduleIndex}`}>
-              <div className="mb-4">
-                <span className="font-mono text-sm text-white" data-testid={`schedule-id-${scheduleIndex}`}>{schedule.schedule_id}</span>
-                <p className="font-mono text-xs text-gray-500" data-testid={`schedule-date-${scheduleIndex}`}>
-                  {new Date(schedule.created_at).toLocaleString()}
-                </p>
-              </div>
-              <div className="space-y-2">
-                {schedule.sessions?.map((session, sessionIndex) => (
-                  <div
-                    key={sessionIndex}
-                    className={`bg-black/30 border p-3 rounded-sm ${
-                      session.conflicts?.length > 0 ? 'border-red-500/50' : 'border-white/5'
-                    }`}
-                    data-testid={`session-${scheduleIndex}-${sessionIndex}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-subheading font-bold text-base text-white" data-testid={`session-name-display-${scheduleIndex}-${sessionIndex}`}>
-                          {session.name}
-                        </h4>
-                        <p className="font-mono text-xs text-gray-400" data-testid={`session-details-${scheduleIndex}-${sessionIndex}`}>
-                          {session.speaker} • {session.start_time} - {session.end_time} • {session.room}
-                        </p>
-                      </div>
-                      {session.conflicts?.length > 0 && (
-                        <div className="flex items-center space-x-2 text-red-400" data-testid={`session-conflict-${scheduleIndex}-${sessionIndex}`}>
-                          <AlertTriangle className="w-4 h-4" />
-                          <span className="font-mono text-xs">Conflict</span>
-                        </div>
-                      )}
-                    </div>
+            <Button
+              onClick={addSession}
+              variant="outline"
+              className="border-white/10 text-white hover:bg-white/5 h-9 px-4 rounded-lg font-mono text-[10px] uppercase tracking-widest"
+              data-testid="add-session-button"
+            >
+              <Plus className="w-3 h-3 mr-2" />
+              Add Session Vector
+            </Button>
+          </CardHeader>
+          <CardContent className="p-8 space-y-6">
+            <div className="space-y-3">
+              {sessions.map((session, index) => (
+                <div key={index} className="bg-white/[0.02] border border-white/5 p-6 rounded-2xl grid grid-cols-1 md:grid-cols-5 gap-4 animate-in-fade" data-testid={`session-row-${index}`}>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-mono text-gray-600 uppercase tracking-widest ml-1">Designation</label>
+                    <Input
+                      placeholder="e.g. Keynote"
+                      value={session.name}
+                      onChange={(e) => updateSession(index, 'name', e.target.value)}
+                      className="bg-black/40 border-white/10 text-white h-11 rounded-xl focus:border-[var(--primary)]/40 text-sm"
+                    />
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-mono text-gray-600 uppercase tracking-widest ml-1">Personnel</label>
+                    <Input
+                      placeholder="e.g. Dr. Smith"
+                      value={session.speaker}
+                      onChange={(e) => updateSession(index, 'speaker', e.target.value)}
+                      className="bg-black/40 border-white/10 text-white h-11 rounded-xl focus:border-[var(--primary)]/40 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-mono text-gray-600 uppercase tracking-widest ml-1">Duration (M)</label>
+                    <Input
+                      type="number"
+                      value={session.duration}
+                      onChange={(e) => updateSession(index, 'duration', parseInt(e.target.value))}
+                      className="bg-black/40 border-white/10 text-white h-11 rounded-xl focus:border-[var(--primary)]/40 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-mono text-gray-600 uppercase tracking-widest ml-1">Locus</label>
+                    <Input
+                      placeholder="e.g. Hall A"
+                      value={session.room}
+                      onChange={(e) => updateSession(index, 'room', e.target.value)}
+                      className="bg-black/40 border-white/10 text-white h-11 rounded-xl focus:border-[var(--primary)]/40 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-mono text-gray-600 uppercase tracking-widest ml-1">Target Sync</label>
+                    <Input
+                      placeholder="e.g. 09:00"
+                      value={session.preferred_time}
+                      onChange={(e) => updateSession(index, 'preferred_time', e.target.value)}
+                      className="bg-black/40 border-white/10 text-white h-11 rounded-xl focus:border-[var(--primary)]/40 text-sm"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+
+            <Button
+              onClick={handleCreateSchedule}
+              disabled={isProcessing}
+              className="w-full bg-[var(--primary)] text-black font-subheading font-bold uppercase tracking-[0.2em] hover:bg-[#F0B020] h-16 rounded-xl text-lg shadow-[0_10px_30px_rgba(212,160,23,0.15)] group transition-all"
+              data-testid="create-schedule-button"
+            >
+              {isProcessing ? (
+                <>
+                  <Zap className="w-6 h-6 mr-3 animate-spin" />
+                  Calculating Optimal Flow...
+                </>
+              ) : (
+                <>
+                  <CalendarClock className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
+                  Synthesize Timeline
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Generated Timeline Visualization */}
+        {schedules.length > 0 && (
+          <div className="space-y-8">
+            <div className="flex items-center space-x-3 ml-2">
+              <Clock className="w-5 h-5 text-[var(--primary)]" />
+              <h2 className="font-heading font-black text-xs uppercase tracking-[0.4em] text-white">Generated Temporal Matrix</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-8">
+              {schedules.map((schedule, scheduleIndex) => (
+                <Card key={scheduleIndex} className="premium-glass bg-transparent border-white/5 overflow-hidden animate-in-fade" data-testid={`schedule-${scheduleIndex}`}>
+                  <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4 flex flex-row items-center justify-between">
+                    <div className="space-y-1">
+                      <CardTitle className="font-mono text-[10px] uppercase tracking-widest text-white font-bold">TIMELINE_REF_{schedule.schedule_id?.split('_')[1] || scheduleIndex}</CardTitle>
+                      <CardDescription className="font-mono text-[9px] uppercase tracking-tighter">Processed: {new Date(schedule.created_at).toLocaleString()}</CardDescription>
+                    </div>
+                    <div className="px-3 py-1 bg-[var(--primary)]/10 border border-[var(--primary)]/20 rounded-full">
+                      <span className="text-[9px] font-mono font-bold text-[var(--primary)] uppercase tracking-widest">{schedule.sessions?.length || 0} Synchronized Units</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    <div className="space-y-4">
+                      {schedule.sessions?.map((session, sessionIndex) => (
+                        <div
+                          key={sessionIndex}
+                          className={`relative group p-6 rounded-2xl border transition-all duration-500 ${
+                            session.conflicts?.length > 0 ? 'bg-red-500/5 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.05)]' : 'bg-white/[0.02] border-white/5 hover:border-white/20'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-6">
+                              <div className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center border transition-all ${session.conflicts?.length > 0 ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-black/40 border-white/10 text-white'}`}>
+                                <span className="text-[10px] font-mono font-bold">{session.start_time}</span>
+                                <div className="w-4 h-[1px] bg-white/20 my-1" />
+                                <span className="text-[9px] font-mono opacity-50">{session.end_time}</span>
+                              </div>
+                              
+                              <div className="space-y-1">
+                                <h4 className="font-heading font-black text-xl text-white tracking-tight group-hover:text-[var(--primary)] transition-colors">
+                                  {session.name}
+                                </h4>
+                                <div className="flex items-center space-x-4">
+                                  <div className="flex items-center space-x-1.5 text-[10px] font-mono text-gray-500">
+                                    <User className="w-3 h-3" />
+                                    <span>{session.speaker}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1.5 text-[10px] font-mono text-gray-500">
+                                    <MapPin className="w-3 h-3" />
+                                    <span>{session.room}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {session.conflicts?.length > 0 ? (
+                              <div className="flex flex-col items-end space-y-2 animate-pulse">
+                                <div className="flex items-center space-x-2 text-red-400 bg-red-400/10 px-3 py-1 rounded-full border border-red-400/20">
+                                  <AlertTriangle className="w-3 h-3" />
+                                  <span className="font-mono text-[9px] font-bold uppercase tracking-widest">Conflict Detected</span>
+                                </div>
+                                <p className="text-[8px] font-mono text-red-400/60 uppercase">Manual resolution required</p>
+                              </div>
+                            ) : (
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                <CheckCircle className="w-5 h-5 text-[var(--accent-green)]" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

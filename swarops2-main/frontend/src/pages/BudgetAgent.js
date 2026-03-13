@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../App';
 import axios from 'axios';
-import { CreditCard, Plus, DollarSign, AlertCircle } from 'lucide-react';
+import { CreditCard, Plus, DollarSign, AlertCircle, PieChart, TrendingUp, Wallet, ArrowRight, ShieldAlert } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 
 const BudgetAgent = () => {
   const { currentEventId, userId, API } = useContext(AppContext);
@@ -88,177 +89,220 @@ const BudgetAgent = () => {
   };
 
   return (
-    <div className="p-8 space-y-8" data-testid="budget-agent-page">
-      {/* Header */}
-      <div className="flex items-center space-x-3">
-        <CreditCard className="w-8 h-8 text-[#D4A017]" strokeWidth={1.5} />
-        <div>
-          <h1 className="font-heading font-bold text-3xl tracking-wide text-white" data-testid="page-title">
-            Budget Tracker Agent
-          </h1>
-          <p className="font-mono text-xs text-gray-500 uppercase tracking-widest" data-testid="page-subtitle">
-            Financial Monitoring & Overrun Detection
-          </p>
+    <div className="py-10 space-y-10 max-w-7xl mx-auto text-white" data-testid="budget-agent-page">
+      {/* Page Header */}
+      <div className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-8 rounded-3xl premium-glass">
+        <div className="flex items-center space-x-6">
+          <div className="w-16 h-16 bg-[#D4A017]/10 rounded-2xl flex items-center justify-center border border-[#D4A017]/20 shadow-[0_0_20px_rgba(212,160,23,0.1)]">
+            <TrendingUp className="w-8 h-8 text-[#D4A017]" strokeWidth={1.5} />
+          </div>
+          <div>
+            <h1 className="font-heading font-bold text-4xl tracking-tight text-white" data-testid="page-title">
+              Financial Oracle
+            </h1>
+            <p className="font-mono text-xs text-gray-500 uppercase tracking-[0.3em] mt-1" data-testid="page-subtitle">
+              Resource Allocation & Overrun Surveillance
+            </p>
+          </div>
+        </div>
+        
+        <div className="px-6 py-2 rounded-full border border-green-500/20 bg-green-500/10 text-green-500 flex items-center space-x-3">
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="font-mono text-[10px] font-bold uppercase tracking-widest">Reserve Protocol Active</span>
         </div>
       </div>
 
-      {/* Create Budget */}
-      <div className="bg-[#101010] border border-white/5 p-6 rounded-sm space-y-4" data-testid="create-budget-section">
-        <div className="flex items-center justify-between">
-          <label className="font-subheading font-bold text-xl uppercase tracking-wider text-[#D4A017]" data-testid="categories-label">
-            Budget Categories
-          </label>
-          <Button
-            onClick={addCategory}
-            variant="outline"
-            className="border-white/20 text-white hover:bg-white/5 h-10 px-4"
-            data-testid="add-category-button"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Category
-          </Button>
-        </div>
-
-        <div className="space-y-3">
-          {categories.map((category, index) => (
-            <div key={index} className="bg-[#121212] border border-white/10 p-4 rounded-sm grid grid-cols-2 gap-3" data-testid={`category-row-${index}`}>
-              <Input
-                placeholder="Category Name"
-                value={category.name}
-                onChange={(e) => updateCategory(index, 'name', e.target.value)}
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid={`category-name-${index}`}
-              />
-              <Input
-                placeholder="Allocated Amount ($)"
-                type="number"
-                value={category.allocated}
-                onChange={(e) => updateCategory(index, 'allocated', e.target.value)}
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid={`category-amount-${index}`}
-              />
-            </div>
-          ))}
-        </div>
-
-        <Button
-          onClick={handleCreateBudget}
-          className="bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-wider hover:bg-[#F0B020] h-12 px-8"
-          data-testid="create-budget-button"
-        >
-          Create Budget
-        </Button>
-      </div>
-
-      {/* Budget List */}
-      {budgets.length > 0 && (
-        <div className="bg-[#101010] border border-white/5 p-6 rounded-sm space-y-4" data-testid="budgets-section">
-          <h2 className="font-subheading font-bold text-xl uppercase tracking-wider text-[#D4A017]" data-testid="budgets-title">
-            Active Budgets
-          </h2>
-          <div className="space-y-3">
-            {budgets.map((budget, index) => {
-              const overrun = budget.total_spent > budget.total_allocated;
-              return (
-                <div
-                  key={index}
-                  onClick={() => setSelectedBudget(budget)}
-                  className={`bg-[#121212] border p-4 rounded-sm cursor-pointer ${
-                    selectedBudget?.budget_id === budget.budget_id
-                      ? 'border-[#D4A017]'
-                      : overrun
-                      ? 'border-red-500/50'
-                      : 'border-white/10 hover:border-white/20'
-                  }`}
-                  data-testid={`budget-item-${index}`}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-mono text-sm text-white" data-testid={`budget-id-${index}`}>{budget.budget_id}</span>
-                    {overrun && (
-                      <div className="flex items-center space-x-2 text-red-400" data-testid={`budget-overrun-${index}`}>
-                        <AlertCircle className="w-4 h-4" />
-                        <span className="font-mono text-xs uppercase">Overrun</span>
-                      </div>
-                    )}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left: Allocation & Controls */}
+        <div className="lg:col-span-5 space-y-6">
+          <Card className="premium-glass bg-transparent border-white/5 overflow-hidden">
+            <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4 flex flex-row items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <PieChart className="w-4 h-4 text-[#D4A017]" />
+                <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Config Layer</CardTitle>
+              </div>
+              <Button
+                onClick={addCategory}
+                variant="outline"
+                className="border-white/10 text-white hover:bg-white/5 h-8 px-4 rounded-lg font-mono text-[9px] uppercase tracking-widest"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Vector
+              </Button>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6">
+              <div className="space-y-3">
+                {categories.map((category, index) => (
+                  <div key={index} className="bg-white/[0.02] border border-white/5 p-4 rounded-xl grid grid-cols-2 gap-3 group transition-all hover:bg-white/[0.04]">
+                    <div className="space-y-1.5">
+                      <label className="text-[8px] font-mono text-gray-600 uppercase tracking-widest ml-1">Label</label>
+                      <Input
+                        placeholder="e.g. Venue"
+                        value={category.name}
+                        onChange={(e) => updateCategory(index, 'name', e.target.value)}
+                        className="bg-black/40 border-white/10 text-white h-10 rounded-lg text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[8px] font-mono text-gray-600 uppercase tracking-widest ml-1">Cap ($)</label>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={category.allocated}
+                        onChange={(e) => updateCategory(index, 'allocated', e.target.value)}
+                        className="bg-black/40 border-white/10 text-white h-10 rounded-lg text-xs"
+                      />
+                    </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <p className="font-mono text-xs text-gray-500 uppercase mb-1">Allocated</p>
-                      <p className="font-heading text-lg text-green-400" data-testid={`budget-allocated-${index}`}>
-                        ${budget.total_allocated.toLocaleString()}
-                      </p>
+                ))}
+              </div>
+              
+              <Button
+                onClick={handleCreateBudget}
+                className="w-full bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-widest hover:bg-[#F0B020] h-14 rounded-xl shadow-[0_10px_30px_rgba(212,160,23,0.1)] group transition-all"
+              >
+                Initialize Reserve
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Active Budgets List */}
+          {budgets.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 ml-2">
+                <Wallet className="w-4 h-4 text-gray-500" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold">Active Reserve Units</span>
+              </div>
+              <div className="space-y-3">
+                {budgets.map((budget, index) => {
+                  const overrun = budget.total_spent > budget.total_allocated;
+                  const percent = Math.min((budget.total_spent / budget.total_allocated) * 100, 100);
+                  
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedBudget(budget)}
+                      className={`group p-6 rounded-3xl border transition-all cursor-pointer relative overflow-hidden ${
+                        selectedBudget?.budget_id === budget.budget_id
+                          ? 'premium-glass-hover bg-[#D4A017]/5 border-[#D4A017]/30'
+                          : overrun
+                          ? 'bg-red-500/5 border-red-500/20'
+                          : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-6 relative z-10">
+                        <div className="font-mono text-[10px] text-white font-bold opacity-60">ID://{budget.budget_id?.slice(-8).toUpperCase()}</div>
+                        {overrun && (
+                          <div className="flex items-center space-x-2 text-red-400 animate-pulse">
+                            <ShieldAlert className="w-3 h-3" />
+                            <span className="font-mono text-[9px] font-black uppercase tracking-widest">Overrun Alert</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-6 relative z-10">
+                        <div className="space-y-1">
+                          <p className="font-mono text-[9px] text-gray-600 uppercase tracking-tighter">Allocated</p>
+                          <p className="font-heading text-xl text-white block">${budget.total_allocated.toLocaleString()}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-mono text-[9px] text-gray-600 uppercase tracking-tighter">Utilized</p>
+                          <p className={`font-heading text-xl block ${overrun ? 'text-red-400' : 'text-[#D4A017]'}`}>${(budget.total_spent || 0).toLocaleString()}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-mono text-[9px] text-gray-600 uppercase tracking-tighter">Delta</p>
+                          <p className="font-heading text-xl text-green-400 block">${(budget.total_allocated - (budget.total_spent || 0)).toLocaleString()}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Micro Progress Bar */}
+                      <div className="mt-6 h-1 w-full bg-white/5 rounded-full overflow-hidden relative z-10">
+                         <div 
+                          className={`h-full transition-all duration-1000 ${overrun ? 'bg-red-500' : 'bg-[#D4A017]'}`} 
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-mono text-xs text-gray-500 uppercase mb-1">Spent</p>
-                      <p className={`font-heading text-lg ${overrun ? 'text-red-400' : 'text-white'}`} data-testid={`budget-spent-${index}`}>
-                        ${(budget.total_spent || 0).toLocaleString()}
-                      </p>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right: Expense Ledger */}
+        <div className="lg:col-span-7">
+          <Card className={`premium-glass bg-transparent border-white/5 h-full flex flex-col transition-all duration-700 ${!selectedBudget ? 'opacity-30 grayscale' : ''}`}>
+             <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4">
+              <div className="flex items-center space-x-3">
+                <CreditCard className="w-4 h-4 text-[#D4A017]" />
+                <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Expense Entry Logic</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-10 space-y-10">
+              {!selectedBudget ? (
+                 <div className="h-96 flex flex-col items-center justify-center text-center opacity-30">
+                  <PieChart className="w-20 h-20 text-gray-600 mb-6" strokeWidth={1} />
+                  <p className="font-heading text-sm text-gray-400 uppercase tracking-[0.3em] max-w-xs">Awaiting reserve unit selection for ledger access</p>
+                </div>
+              ) : (
+                <div className="space-y-10 animate-in-fade">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest ml-1 text-gradient-gold">Source Vector</label>
+                      <Input
+                        value={expenseCategory}
+                        onChange={(e) => setExpenseCategory(e.target.value)}
+                        placeholder="e.g. Venue"
+                        className="bg-black/40 border-white/10 text-white h-14 rounded-xl focus:border-[#D4A017]/50 text-base"
+                      />
                     </div>
-                    <div>
-                      <p className="font-mono text-xs text-gray-500 uppercase mb-1">Remaining</p>
-                      <p className="font-heading text-lg text-[#D4A017]" data-testid={`budget-remaining-${index}`}>
-                        ${(budget.total_allocated - (budget.total_spent || 0)).toLocaleString()}
-                      </p>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest ml-1 text-gradient-gold">Quantum Amount ($)</label>
+                      <Input
+                        type="number"
+                        value={expenseAmount}
+                        onChange={(e) => setExpenseAmount(e.target.value)}
+                        placeholder="0.00"
+                        className="bg-black/40 border-white/10 text-white h-14 rounded-xl focus:border-[#D4A017]/50 text-base"
+                      />
                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest ml-1">Operation Metadata</label>
+                    <Input
+                      value={expenseDescription}
+                      onChange={(e) => setExpenseDescription(e.target.value)}
+                      placeholder="Transaction details..."
+                      className="bg-black/40 border-white/10 text-white h-14 rounded-xl focus:border-[#D4A017]/50 text-base"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleAddExpense}
+                    className="w-full bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-[0.2em] hover:bg-[#F0B020] h-20 rounded-2xl text-xl shadow-[0_20px_50px_rgba(212,160,23,0.15)] group transition-all transform active:scale-[0.98]"
+                  >
+                    <DollarSign className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform" />
+                    Authorize Transaction
+                  </Button>
+                  
+                  <div className="pt-8 border-t border-white/5">
+                    <div className="flex items-center space-x-2 mb-4">
+                      <ArrowRight className="w-3 h-3 text-[var(--accent-cyan)]" />
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent-cyan)]">Unit Constraints</span>
+                    </div>
+                    <p className="font-body text-xs text-gray-500 leading-relaxed italic">
+                      Transactions are monitored by the Neural Integrity Grid. 
+                      Unauthorized overruns will trigger immediate administrative overrides.
+                    </p>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      )}
-
-      {/* Add Expense */}
-      {selectedBudget && (
-        <div className="bg-[#101010] border border-[#D4A017] p-6 rounded-sm space-y-4" data-testid="add-expense-section">
-          <h2 className="font-subheading font-bold text-xl uppercase tracking-wider text-[#D4A017]" data-testid="add-expense-title">
-            Add Expense
-          </h2>
-          
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="font-mono text-xs text-gray-400 uppercase" data-testid="expense-category-label">Category</label>
-              <Input
-                value={expenseCategory}
-                onChange={(e) => setExpenseCategory(e.target.value)}
-                placeholder="e.g., Venue"
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid="expense-category-input"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="font-mono text-xs text-gray-400 uppercase" data-testid="expense-amount-label">Amount ($)</label>
-              <Input
-                value={expenseAmount}
-                onChange={(e) => setExpenseAmount(e.target.value)}
-                type="number"
-                placeholder="0.00"
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid="expense-amount-input"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="font-mono text-xs text-gray-400 uppercase" data-testid="expense-description-label">Description</label>
-              <Input
-                value={expenseDescription}
-                onChange={(e) => setExpenseDescription(e.target.value)}
-                placeholder="Description"
-                className="bg-black/50 border border-white/10 text-white h-10 font-mono text-sm"
-                data-testid="expense-description-input"
-              />
-            </div>
-          </div>
-
-          <Button
-            onClick={handleAddExpense}
-            className="bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-wider hover:bg-[#F0B020] h-12 px-8"
-            data-testid="add-expense-button"
-          >
-            <DollarSign className="w-4 h-4 mr-2" />
-            Add Expense
-          </Button>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
