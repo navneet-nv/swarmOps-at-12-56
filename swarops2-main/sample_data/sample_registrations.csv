@@ -1,0 +1,11 @@
+Name,Email,Role,Team,College
+John Doe,john@example.com,Participant,Team Alpha,MIT
+Jane Smith,jane@example.com,Mentor,Team Beta,Stanford
+Bob Johnson,bob@example.com,Participant,Team Alpha,Berkeley
+Alice Williams,alice@example.com,Judge,N/A,Harvard
+Charlie Brown,charlie@example.com,Participant,Team Gamma,CMU
+Eva Martinez,eva@example.com,Mentor,Team Beta,Caltech
+David Lee,david@example.com,Participant,Team Gamma,Princeton
+Sophia Chen,sophia@example.com,Participant,Team Delta,Yale
+Michael Taylor,michael@example.com,Mentor,Team Delta,Cornell
+Emily Davis,emily@example.com,Judge,N/A,Columbia

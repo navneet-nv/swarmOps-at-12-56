@@ -1,0 +1,121 @@
+{
+  "project_name": "SwarmOps",
+  "design_philosophy": {
+    "identity": "E1 - The Anti-AI Designer",
+    "core_vibe": "Tactical Command Center meets High-End Fintech",
+    "emotional_goal": "Control, Precision, Intelligence",
+    "key_principles": [
+      "No gradients on text",
+      "Function over decoration",
+      "High contrast data visualization",
+      "Motion conveys status (pulsing = thinking, solid = idle)"
+    ]
+  },
+  "typography": {
+    "instructions": "Add this import to index.css: @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;700&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');",
+    "families": {
+      "heading": "Orbitron, sans-serif",
+      "subheading": "Rajdhani, sans-serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "usage": {
+      "h1": "font-heading font-black text-5xl tracking-widest uppercase text-white",
+      "h2": "font-heading font-bold text-3xl tracking-wide text-white/90",
+      "h3": "font-subheading font-bold text-xl uppercase tracking-wider text-primary",
+      "body": "font-body text-base text-gray-400 leading-relaxed",
+      "caption": "font-mono text-xs text-gray-500 uppercase tracking-widest",
+      "code": "font-mono text-sm text-green-400 bg-black/50 p-2 rounded-sm border border-white/5"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#050505",
+      "surface": "#101010",
+      "surface_highlight": "#1A1A1A",
+      "border": "#262626",
+      "primary": "#D4A017",
+      "primary_dim": "#967010",
+      "secondary": "#FFFFFF",
+      "accent_cyan": "#00F0FF",
+      "accent_red": "#FF2A2A",
+      "accent_green": "#00FF94",
+      "text_main": "#EDEDED",
+      "text_muted": "#888888"
+    },
+    "utility_classes": {
+      "bg_app": "bg-[#050505]",
+      "bg_card": "bg-[#101010] border border-white/10",
+      "text_gold": "text-[#D4A017]",
+      "border_gold": "border-[#D4A017]",
+      "glow_gold": "shadow-[0_0_15px_rgba(212,160,23,0.15)]"
+    }
+  },
+  "layout_strategy": {
+    "grid_system": "Bento Grid (High Density)",
+    "spacing": "Relaxed (p-6 to p-8 internal padding)",
+    "containers": "Sharp edges or minimal rounded-md (4px)",
+    "z_index": {
+      "base": "z-0",
+      "scanlines": "z-40 pointer-events-none",
+      "modals": "z-50"
+    }
+  },
+  "visual_enhancers": {
+    "scanlines": "background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2)); background-size: 100% 4px;",
+    "glass_panel": "backdrop-blur-md bg-black/40 border border-white/10",
+    "active_agent_pulse": "animate-pulse border-primary/50 shadow-[0_0_10px_rgba(212,160,23,0.3)]"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-wider hover:bg-[#F0B020] transition-all duration-200 sharp-corners",
+      "secondary": "bg-transparent border border-white/20 text-white font-subheading uppercase hover:bg-white/5 hover:border-white/40 transition-all",
+      "destructive": "bg-red-900/20 border border-red-500/50 text-red-500 hover:bg-red-900/40"
+    },
+    "cards": {
+      "default": "bg-[#101010] border border-white/5 p-6 hover:border-[#D4A017]/30 transition-colors duration-300 group relative overflow-hidden",
+      "agent_active": "bg-[#121212] border border-[#D4A017] shadow-[0_0_20px_rgba(212,160,23,0.1)]"
+    },
+    "inputs": {
+      "default": "bg-black/50 border border-white/10 text-white focus:border-[#D4A017] focus:ring-1 focus:ring-[#D4A017] placeholder:text-gray-700 font-mono text-sm h-12"
+    },
+    "badges": {
+      "status_online": "bg-green-500/10 text-green-400 border border-green-500/20 font-mono text-xs px-2 py-0.5 uppercase",
+      "status_busy": "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono text-xs px-2 py-0.5 uppercase animate-pulse",
+      "status_offline": "bg-gray-800 text-gray-500 border border-gray-700 font-mono text-xs px-2 py-0.5 uppercase"
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1764438042238-3b2eec6aaee7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGdvbGQlMjBibGFjayUyMHRlY2hub2xvZ3klMjBjb25uZWN0aW9ufGVufDB8fHx8MTc3MzIzMTczMHww&ixlib=rb-4.1.0&q=85",
+      "login_texture": "https://images.unsplash.com/photo-1683347111036-a93bfba8b227?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGdvbGQlMjBibGFjayUyMHRlY2hub2xvZ3klMjBjb25uZWN0aW9ufGVufDB8fHx8MTc3MzIzMTczMHww&ixlib=rb-4.1.0&q=85",
+      "avatars": [
+        "https://images.unsplash.com/photo-1770058428276-7ca3d2f98568?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1Mjh8MHwxfHNlYXJjaHwxfHxwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMGNvbmZpZGVudHxlbnwwfHx8fDE3NzMyMzE3MzF8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1762522926157-bcc04bf0b10a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1Mjh8MHwxfHNlYXJjaHwzfHxwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMGNvbmZpZGVudHxlbnwwfHx8fDE3NzMyMzE3MzF8MA&ixlib=rb-4.1.0&q=85",
+        "https://images.unsplash.com/photo-1771898343647-bd979ad8cca5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1Mjh8MHwxfHNlYXJjaHw0fHxwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMGNvbmZpZGVudHxlbnwwfHx8fDE3NzMyMzE3MzF8MA&ixlib=rb-4.1.0&q=85"
+      ]
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "Stroke width 1.5px (Thin/Tech feel)",
+      "mapping": {
+        "dashboard": "LayoutDashboard",
+        "swarm": "Hexagon",
+        "schedule": "CalendarClock",
+        "social": "Share2",
+        "email": "Mail",
+        "budget": "CreditCard",
+        "volunteers": "Users"
+      }
+    }
+  },
+  "instructions_to_main_agent": [
+    "CRITICAL: Install 'framer-motion' if not present (yarn add framer-motion) for complex transitions.",
+    "CRITICAL: Use 'sonner' for all notifications.",
+    "Use the provided image URLs. DO NOT leave src='' empty.",
+    "Implement the 'Scanline' effect as a global overlay in App.js or main layout.",
+    "Force Dark Mode: Add 'dark' class to the html/body tag by default.",
+    "The primary gold color is #D4A017. Use it for Primary Buttons, Active States, and Key Data Points.",
+    "Avoid rounded-full for buttons unless it's a specific 'pill' style. Prefer rounded-sm for the military/tech look."
+  ]
+}
