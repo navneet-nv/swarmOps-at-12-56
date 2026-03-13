@@ -31,37 +31,38 @@ Orchestrated workflow that executes multiple agents in sequence:
 3. Email Agent auto-triggered if conflicts detected
 4. Visual timeline shows agent handoffs and execution flow
 
-### 5 Core AI Agents
+### 8 Core AI Agents (Fully Integrated)
 
-1. **Content Strategist & Social Media Agent**
-   - Generates promotional copy from event descriptions
-   - Creates 5-7 social media posts for Twitter/LinkedIn/Instagram
-   - Engagement score analysis for optimal posting times
-   - Approve/edit/reject controls for generated content
+1. **Strategic Strategy Agent (Event Planner)**
+   - Determines macro-schedule and task breakdown.
+   - Orchestrates the high-level plan for all other agents.
 
-2. **Communications & Targeted Mailing Agent**
-   - CSV/Excel parser with email validation
-   - Role-based segmentation (Participants, Mentors, Judges)
-   - Template personalization with {name}, {role}, {team}, {college} variables
-   - Bulk email sending with Resend integration
+2. **Content Strategist & Social Media Agent**
+   - Generates promotional copy from event descriptions.
+   - Creates 5-7 social media posts with engagement scoring.
 
-3. **Dynamic Scheduler & Conflict Resolver Agent**
-   - AI-powered schedule generation from session constraints
-   - ConflictChecker tool for time overlap detection
-   - Speaker and room conflict identification
-   - Auto-triggers email notifications when conflicts detected
+3. **Temporal Engine (Scheduler Agent)**
+   - AI-powered schedule generation with ConflictChecker tool.
+   - Auto-triggers conflict resolution protocols.
 
-4. **Budget Tracker Agent**
-   - Real-time expense tracking by category
-   - Automatic overrun detection and alerts
-   - Budget allocation vs. spending visualization
-   - Expense history with timestamps
+4. **Financial Oracle (Budget Agent)**
+   - Real-time expense tracking and budget allocation.
+   - Automatic overrun detection and alerts.
 
-5. **Volunteer Coordinator Agent**
-   - CSV parser for volunteer data
-   - Skill-based task assignment algorithm
-   - Availability matching
-   - Assignment reporting and tracking
+5. **Personnel Matrix (Volunteer Agent)**
+   - Skill-based unit deployment and task assignment.
+   - Availability matching and roster management.
+
+6. **Marketing & Promotions Agent** (Content Handoff)
+   - Specialized copy optimization for specific channels.
+
+7. **Logistics & Resource Manager Agent**
+   - Venue space and equipment allocation.
+   - Synchronizes physical assets with the event schedule.
+
+8. **AI Risk Detection Agent**
+   - Pre-emptive threat assessment across all generated data.
+   - Severity scoring and mitigation strategy generation.
 
 ## Tech Stack
 
@@ -136,14 +137,9 @@ Orchestrated workflow that executes multiple agents in sequence:
 
 ### CrewAI Workflow
 ```
-Entry → Content Strategist → Log Activity
-                                ↓
-                            Scheduler → Log Activity
-                                           ↓
-                                   [Check Conflicts]
-                                           ↓
-                              (if conflicts) → Email Agent → END
-                              (no conflicts) → END
+Planner → Content → Scheduler → Budget → Volunteer → Logistics → Risk
+   ↓         ↓          ↓          ↓           ↓            ↓        ↓
+ [Strategic] [Promo] [Timing] [Finance] [Personnel] [Assets] [Threats]
 ```
 
 ### Shared SwarmState
@@ -455,10 +451,10 @@ sudo supervisorctl restart frontend
 
 ## Key Judging Criteria (25pts Each)
 
-✅ **Multi-Agent Orchestration**: True autonomous handoffs with shared memory and state management
-✅ **All 5 Agents Functional**: Content, Email, Scheduler, Budget, and Volunteer agents fully operational
-✅ **Intuitive Dashboard**: Human-in-the-loop approval controls, agent status indicators, live activity feed
-✅ **Novel Features**: Budget tracking with overrun detection, skill-based volunteer assignment
+✅ **Multi-Agent Orchestration**: Unified 8-agent swarm with shared state
+✅ **End-to-End Lifecycle**: From planning to content, budget, and risk
+✅ **Premium HUD Interface**: High-tech command center with glassmorphism
+✅ **Advanced Logistical Tools**: Conflict detection, budget overruns, skill-matching
 ✅ **Live Demo Flow**: End-to-end workflows from content generation to email campaigns
 
 ## Architecture Highlights
