@@ -8,8 +8,8 @@ class RiskDetectionAgent:
     def __init__(self, db):
         self.db = db
         
-    async def analyze_risks(self, event_id: str, event_plan: dict, schedule: list, user_id: str):
-        """Analyze plan and schedule for potential risks"""
+    async def analyze_risks(self, event_id: str, event_plan: dict, schedule: list, user_id: str, memory_state: dict = None):
+        """Analyze plan, schedule, and full memory state for potential risks"""
         
         await self._log_activity(event_id, "started", "Analyzing event plan for potential logistical and macro risks")
         
@@ -23,9 +23,16 @@ class RiskDetectionAgent:
             )
             
             task_description = f"""
-            Analyze the following event plan and schedule to identify potential risks:
+            Analyze the following event plan, schedule, and current global swarm state to identify potential risks:
             EVENT PLAN: {json.dumps(event_plan)}
             SCHEDULE: {json.dumps(schedule)}
+            CURRENT GLOBAL SWARM STATE (includes budget, volunteer assignments, logistics): {json.dumps(memory_state or {})}
+            
+            Pay special attention to:
+            1. Volunteer shortages (check if volunteers array is sufficient for the task breakdown).
+            2. Budget overruns (check if operations budget matches or exceeds allocated categories).
+            3. Venue capacity issues in logistics against expected registrations.
+            4. Schedule density (too many overlapping sessions).
             
             Return exactly a JSON object (without markdown code blocks) with the following structure:
             {{

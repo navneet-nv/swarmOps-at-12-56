@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { AppContext } from '../App';
 import axios from 'axios';
 import { Mail, Upload, Send, FileText, CheckCircle, Terminal, Users, Info } from 'lucide-react';
@@ -7,6 +7,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { motion } from 'framer-motion';
 
 const EmailAgent = () => {
   const { currentEventId, userId, API } = useContext(AppContext);
@@ -17,18 +18,18 @@ const EmailAgent = () => {
   const [emailSubject, setEmailSubject] = useState('Welcome to the Event!');
   const [isSending, setIsSending] = useState(false);
 
-  useEffect(() => {
-    fetchRegistrations();
-  }, [currentEventId]);
-
-  const fetchRegistrations = async () => {
+  const fetchRegistrations = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/agent/email/registrations/${currentEventId}`);
       setRegistrations(response.data);
     } catch (e) {
       console.error('Failed to fetch registrations', e);
     }
-  };
+  }, [API, currentEventId]);
+
+  useEffect(() => {
+    fetchRegistrations();
+  }, [currentEventId, fetchRegistrations]);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -75,45 +76,65 @@ const EmailAgent = () => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="py-10 space-y-10 max-w-6xl mx-auto text-white" data-testid="email-agent-page">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="py-10 space-y-10 max-w-7xl mx-auto text-foreground" 
+      data-testid="email-agent-page"
+    >
       {/* Page Header */}
-      <div className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-8 rounded-3xl premium-glass">
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-between bg-card/40 border border-border p-8 rounded-3xl premium-glass gap-6">
         <div className="flex items-center space-x-6">
-          <div className="w-16 h-16 bg-[var(--accent-cyan)]/10 rounded-2xl flex items-center justify-center border border-[var(--accent-cyan)]/20 shadow-[0_0_20px_rgba(0,240,255,0.1)]">
-            <Mail className="w-8 h-8 text-[var(--accent-cyan)]" strokeWidth={1.5} />
+          <div className="w-16 h-16 bg-accent-purple/10 rounded-2xl flex items-center justify-center border border-accent-purple/20 shadow-[0_0_20px_hsl(var(--accent-purple)/0.15)] relative overflow-hidden group">
+            <div className="absolute inset-0 bg-accent-purple/5 group-hover:bg-accent-purple/10 transition-colors" />
+            <Mail className="w-8 h-8 text-accent-purple group-hover:scale-110 transition-transform" strokeWidth={1.5} />
           </div>
           <div>
-            <h1 className="font-heading font-bold text-4xl tracking-tight text-white" data-testid="page-title">
-              Communications Hub
+            <h1 className="font-heading font-black text-4xl md:text-5xl tracking-tight text-foreground" data-testid="page-title">
+              Email Agent
             </h1>
-            <p className="font-mono text-xs text-gray-500 uppercase tracking-[0.3em] mt-1" data-testid="page-subtitle">
-              Mass Participant Engagement Engine
+            <p className="font-mono text-xs text-muted-foreground uppercase tracking-[0.3em] mt-2 flex items-center gap-2" data-testid="page-subtitle">
+              Mass Participant <span className="text-accent-purple opacity-50">&bull;</span> Engagement Engine
             </p>
           </div>
         </div>
         
-        <div className={`px-6 py-2 rounded-full border flex items-center space-x-3 transition-all ${isProcessing || isSending ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-green-500/10 border-green-500/20 text-green-500'}`}>
-          <div className={`w-2.5 h-2.5 rounded-full ${isProcessing || isSending ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
+        <div className={`px-6 py-2.5 rounded-full border flex items-center space-x-3 transition-all ${isProcessing || isSending ? 'bg-amber-500/10 border-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.1)]' : 'bg-accent-green/10 border-accent-green/20 text-accent-green shadow-[0_0_15px_hsl(var(--accent-green)/0.1)]'}`}>
+          <div className={`w-2.5 h-2.5 rounded-full ${isProcessing || isSending ? 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,1)]' : 'bg-accent-green shadow-[0_0_8px_hsl(var(--accent-green))]'}`} />
           <span className="font-mono text-[10px] font-bold uppercase tracking-widest">
             {isProcessing ? 'Processing Data' : isSending ? 'Transmitting' : 'Datalink Stable'}
           </span>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left: Operations */}
         <div className="lg:col-span-5 space-y-6">
           {/* File Upload Card */}
-          <Card className="premium-glass bg-transparent border-white/5 overflow-hidden">
-             <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4">
-              <div className="flex items-center space-x-2">
-                <Upload className="w-4 h-4 text-[var(--accent-cyan)]" />
-                <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Ingestion Module</CardTitle>
+          <Card className="premium-glass bg-card/30 border-border overflow-hidden group hover:border-border/80 transition-all">
+             <CardHeader className="bg-secondary/30 border-b border-border py-5">
+              <div className="flex items-center space-x-3">
+                <Upload className="w-4 h-4 text-accent-cyan" />
+                <CardTitle className="font-heading text-sm uppercase tracking-widest text-foreground">Ingestion Module</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-8 space-y-6">
-              <div className="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-10 group hover:border-[var(--accent-cyan)]/30 transition-all cursor-pointer relative overflow-hidden">
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-border/50 rounded-2xl p-10 group hover:border-accent-cyan/50 hover:bg-secondary/30 transition-all cursor-pointer relative overflow-hidden">
                 <input
                   id="file-upload"
                   type="file"
@@ -123,18 +144,18 @@ const EmailAgent = () => {
                   disabled={isProcessing}
                 />
                 <div className="relative z-0 flex flex-col items-center">
-                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <Upload className="w-8 h-8 text-gray-400 group-hover:text-[var(--accent-cyan)]" />
+                  <div className="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner">
+                    <Upload className="w-8 h-8 text-muted-foreground group-hover:text-accent-cyan transition-colors" />
                   </div>
-                  <p className="font-heading text-sm text-white uppercase tracking-widest mb-1">Drop registration file</p>
-                  <p className="font-mono text-[10px] text-gray-500 uppercase tracking-tighter">CSV or XLSX (Max 10MB)</p>
+                  <p className="font-heading text-sm text-foreground uppercase tracking-widest mb-2 font-bold group-hover:text-accent-cyan transition-colors">Drop registration file</p>
+                  <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">CSV or XLSX (Max 10MB)</p>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3 bg-white/[0.02] p-4 rounded-xl border border-white/5">
-                <Info className="w-4 h-4 text-[var(--accent-cyan)] mt-0.5" />
-                <p className="font-body text-xs text-gray-500 leading-relaxed">
-                  Required Schema: <span className="text-gray-300 font-mono">Name, Email, Role, Team</span>. 
+              <div className="flex items-start space-x-3 bg-secondary/30 p-4 rounded-xl border border-border/50">
+                <Info className="w-4 h-4 text-accent-cyan mt-0.5 shrink-0" />
+                <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                  Required Schema: <span className="text-foreground font-mono bg-background/50 px-1 py-0.5 rounded text-[10px]">Name, Email, Role, Team</span>. 
                   Unit will automatically map fields and validate entries.
                 </p>
               </div>
@@ -143,36 +164,39 @@ const EmailAgent = () => {
 
           {/* Registrations List */}
           {registrations.length > 0 && (
-            <Card className="premium-glass bg-transparent border-white/5 overflow-hidden">
-              <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4">
-                <div className="flex items-center space-x-2">
-                  <FileText className="w-4 h-4 text-gray-500" />
-                  <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Data Repositories</CardTitle>
+            <Card className="premium-glass bg-card/30 border-border overflow-hidden">
+              <CardHeader className="bg-secondary/30 border-b border-border py-5">
+                <div className="flex items-center space-x-3">
+                  <FileText className="w-4 h-4 text-accent-purple" />
+                  <CardTitle className="font-heading text-sm uppercase tracking-widest text-foreground">Data Repositories</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
-                <div className="space-y-2">
+              <CardContent className="p-5 max-h-[400px] overflow-y-auto custom-scrollbar">
+                <div className="space-y-3">
                   {registrations.map((reg, index) => (
                     <div
                       key={index}
                       onClick={() => setSelectedRegistration(reg)}
-                      className={`group p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                      className={`group p-5 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
                         selectedRegistration?.registration_id === reg.registration_id
-                          ? 'bg-[var(--accent-cyan)]/10 border-[var(--accent-cyan)]/30'
-                          : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
+                          ? 'bg-accent-cyan/10 border-accent-cyan/40 shadow-[0_0_15px_hsl(var(--accent-cyan)/0.1)]'
+                          : 'bg-secondary/30 border-border/50 hover:bg-secondary/50 hover:border-border/80'
                       }`}
                     >
-                      <div className="space-y-1">
-                        <div className="font-mono text-[10px] text-white font-bold uppercase tracking-wider">INDEX-{reg.registration_id?.slice(-4).toUpperCase()}</div>
-                        <div className="font-mono text-[8px] text-gray-600 uppercase">SYNCHRONIZED: {new Date(reg.created_at).toLocaleDateString()}</div>
+                      <div className="space-y-1.5 flex flex-col">
+                        <span className="font-mono text-[11px] text-foreground font-bold flex items-center gap-2">
+                           <span className="w-1.5 h-1.5 rounded-full bg-accent-cyan opacity-50" />
+                          INDEX-{reg.registration_id?.slice(-4).toUpperCase()}
+                        </span>
+                        <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider ml-3">SYNC: {new Date(reg.created_at).toLocaleDateString()}</div>
                       </div>
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-4">
                         <div className="text-right">
-                          <div className="font-heading text-lg text-white tabular-nums">{reg.total_count}</div>
-                          <div className="text-[8px] font-mono text-gray-500 uppercase tracking-tighter">ENTRIES</div>
+                          <div className="font-heading text-xl text-foreground tabular-nums font-bold">{reg.total_count}</div>
+                          <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest">ENTRIES</div>
                         </div>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${selectedRegistration?.registration_id === reg.registration_id ? 'bg-[var(--accent-cyan)] text-black border-[var(--accent-cyan)]' : 'bg-black/40 border-white/10 text-white/20 group-hover:text-white group-hover:border-white/20'}`}>
-                          <CheckCircle className="w-4 h-4" strokeWidth={3} />
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${selectedRegistration?.registration_id === reg.registration_id ? 'bg-accent-cyan text-accent-cyan-foreground border-accent-cyan shadow-[0_0_10px_hsl(var(--accent-cyan)/0.3)]' : 'bg-background/40 border-border/50 text-muted-foreground group-hover:text-foreground group-hover:border-border'}`}>
+                          <CheckCircle className="w-4 h-4" strokeWidth={2.5} />
                         </div>
                       </div>
                     </div>
@@ -185,57 +209,61 @@ const EmailAgent = () => {
 
         {/* Right: Composer */}
         <div className="lg:col-span-7">
-          <Card className={`premium-glass bg-transparent border-white/5 h-full flex flex-col transition-all duration-700 ${!selectedRegistration ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
-             <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4 flex flex-row items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Terminal className="w-4 h-4 text-[var(--accent-cyan)]" />
-                  <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Transmission Composer</CardTitle>
+          <Card className={`premium-glass bg-card/30 border-border h-full flex flex-col transition-all duration-700 hover:border-border/80 ${!selectedRegistration ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+             <CardHeader className="bg-secondary/30 border-b border-border py-5 flex flex-row items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Terminal className="w-4 h-4 text-accent-cyan" />
+                  <CardTitle className="font-heading text-sm uppercase tracking-widest text-foreground">Transmission Composer</CardTitle>
                 </div>
                 {selectedRegistration && (
-                  <div className="flex items-center space-x-2 px-3 py-1 bg-[var(--accent-cyan)]/10 border border-[var(--accent-cyan)]/20 rounded-full">
-                    <Users className="w-3 h-3 text-[var(--accent-cyan)]" />
-                    <span className="text-[9px] font-mono font-bold text-[var(--accent-cyan)] uppercase tracking-widest">{selectedRegistration.total_count} Targets</span>
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-accent-cyan/10 border border-accent-cyan/20 rounded-md">
+                    <Users className="w-3.5 h-3.5 text-accent-cyan" />
+                    <span className="text-[10px] font-mono font-bold text-accent-cyan uppercase tracking-widest flex gap-1">
+                      {selectedRegistration.total_count} <span className="opacity-70">Targets</span>
+                    </span>
                   </div>
                 )}
             </CardHeader>
-            <CardContent className="p-8 space-y-8 flex-1">
+            <CardContent className="p-8 md:p-10 space-y-8 flex-1 flex flex-col justify-center">
               {!selectedRegistration ? (
-                <div className="h-full flex flex-col items-center justify-center text-center py-20 opacity-30">
-                  <Mail className="w-16 h-16 text-gray-600 mb-6" strokeWidth={1} />
-                  <p className="font-body text-gray-500 max-w-xs uppercase text-xs tracking-[0.2em]">Select a data repository to begin transmission sequence</p>
+                <div className="h-full flex flex-col items-center justify-center text-center py-20 opacity-50 min-h-[400px]">
+                  <div className="w-24 h-24 rounded-full bg-secondary/50 border border-border flex items-center justify-center mb-8">
+                    <Mail className="w-10 h-10 text-muted-foreground" strokeWidth={1} />
+                  </div>
+                  <p className="font-heading text-sm text-muted-foreground max-w-xs uppercase tracking-[0.2em] leading-relaxed">Select a data repository to begin transmission sequence</p>
                 </div>
               ) : (
-                <div className="space-y-6 animate-in-fade">
+                <div className="space-y-8 animate-in-fade flex-1 flex flex-col">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-mono uppercase tracking-[0.2em] text-gray-500 ml-1">Universal Header</label>
+                    <label className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground ml-1">Universal Header</label>
                     <Input
                       value={emailSubject}
                       onChange={(e) => setEmailSubject(e.target.value)}
                       placeholder="Transmission Subject..."
-                      className="bg-black/40 border-white/10 text-white h-14 rounded-xl focus:border-[var(--accent-cyan)]/50 transition-all font-body text-lg"
+                      className="bg-background/60 border-border/80 text-foreground h-14 rounded-xl focus:border-accent-cyan/50 transition-all font-body text-lg"
                     />
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between ml-1">
-                      <label className="text-[10px] font-mono uppercase tracking-[0.2em] text-gray-500">Neural Payload Template</label>
+                  <div className="space-y-3 flex-1 flex flex-col">
+                    <div className="flex items-center justify-between ml-1 bg-secondary/30 p-2 rounded-t-lg border border-border/50 border-b-0">
+                      <label className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground ml-2">Neural Payload Template</label>
                       <div className="flex space-x-2">
                         {['{name}', '{role}', '{team}'].map(tag => (
-                          <span key={tag} className="text-[8px] font-mono bg-white/5 px-1.5 py-0.5 rounded border border-white/5 text-gray-400 select-none">{tag}</span>
+                          <span key={tag} className="text-[9px] font-mono bg-background/50 px-2 py-1 rounded shadow-sm border border-border/50 text-muted-foreground select-none cursor-copy hover:text-accent-cyan transition-colors" title="Click to insert">{tag}</span>
                         ))}
                       </div>
                     </div>
                     <Textarea
                       value={emailTemplate}
                       onChange={(e) => setEmailTemplate(e.target.value)}
-                      className="bg-black/40 border-white/10 text-white min-h-[300px] rounded-xl focus:border-[var(--accent-cyan)]/50 transition-all font-body text-base leading-relaxed custom-scrollbar"
+                      className="bg-background/60 border-border/80 text-foreground flex-1 min-h-[300px] rounded-b-xl rounded-t-none focus:border-accent-cyan/50 transition-all font-body text-base leading-relaxed custom-scrollbar p-5"
                     />
                   </div>
 
                   <Button
                     onClick={handleSendBulk}
                     disabled={isSending}
-                    className="w-full bg-[var(--accent-cyan)] text-black font-subheading font-bold uppercase tracking-[0.2em] hover:bg-[#00D0FF] h-16 rounded-xl text-lg shadow-[0_10px_30px_rgba(0,240,255,0.15)] group transition-all transform active:scale-[0.98]"
+                    className="w-full bg-gradient-to-r from-accent-cyan to-accent-purple text-white font-subheading font-bold uppercase tracking-[0.2em] hover:opacity-90 h-16 rounded-xl text-lg shadow-[0_15px_30px_hsl(var(--accent-purple)/0.2)] group transition-all transform active:scale-[0.98] border-0 disabled:opacity-50 mt-6"
                   >
                     {isSending ? (
                       <>
@@ -254,8 +282,8 @@ const EmailAgent = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { AppContext } from '../App';
 import axios from 'axios';
 import { Share2, Sparkles, ThumbsUp, ThumbsDown, Edit, Terminal, Clock, FileText, CheckCircle } from 'lucide-react';
@@ -14,18 +14,18 @@ const ContentAgent = () => {
   const [generatedContent, setGeneratedContent] = useState(null);
   const [contentList, setContentList] = useState([]);
 
-  useEffect(() => {
-    fetchContent();
-  }, [currentEventId]);
-
-  const fetchContent = async () => {
+  const fetchContent = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/agent/content/${currentEventId}`);
       setContentList(response.data);
     } catch (e) {
       console.error('Failed to fetch content', e);
     }
-  };
+  }, [API, currentEventId]);
+
+  useEffect(() => {
+    fetchContent();
+  }, [currentEventId, fetchContent]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -71,7 +71,7 @@ const ContentAgent = () => {
           </div>
           <div>
             <h1 className="font-heading font-bold text-4xl tracking-tight text-white" data-testid="page-title">
-              Content Strategist
+              Content Agent
             </h1>
             <p className="font-mono text-xs text-gray-500 uppercase tracking-[0.3em] mt-1" data-testid="page-subtitle">
               Neural Media & Promotion Engine
@@ -112,7 +112,7 @@ const ContentAgent = () => {
               <Button
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                className="w-full bg-[var(--accent-green)] text-black font-subheading font-bold uppercase tracking-[0.2em] hover:bg-[#00E080] h-16 rounded-xl text-lg shadow-[0_10px_30px_rgba(0,255,148,0.15)] group transition-all"
+                className="w-full bg-[var(--accent-green)] text-neutral-950 font-subheading font-bold uppercase tracking-[0.2em] hover:bg-[#00E080] h-16 rounded-xl text-lg shadow-[0_10px_30px_rgba(0,255,148,0.15)] group transition-all"
                 data-testid="generate-button"
               >
                 {isGenerating ? (

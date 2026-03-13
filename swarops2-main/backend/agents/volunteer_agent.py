@@ -85,8 +85,12 @@ class VolunteerAgent:
                     assignments.append({
                         "task": task['name'],
                         "volunteer": best_match['name'],
-                        "volunteer_id": best_match['volunteer_id']
+                        "volunteer_id": best_match['volunteer_id'],
+                        "matched_skills": list(set(best_match['skills']) & set(required_skills))
                     })
+                    
+                    matched_str = ", ".join(list(set(best_match['skills']) & set(required_skills))) or "General Fit"
+                    await self._log_activity(event_id, "assignment", f"Task: {task['name']} | Required: {', '.join(required_skills)} | Matched Volunteer: {best_match['name']} ({matched_str})")
             
             # Update volunteer pool
             await self.db.volunteers.update_one(

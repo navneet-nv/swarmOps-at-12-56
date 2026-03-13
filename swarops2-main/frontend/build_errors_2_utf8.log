@@ -1,0 +1,42 @@
+﻿yarn run v1.22.22
+$ craco build
+node.exe : (node:22276) [DEP0176] DeprecationWarning: fs.F_OK is 
+deprecated, use fs.constants.F_OK instead
+At C:\Users\Navneet\AppData\Roaming\npm\yarn.ps1:24 char:5
++     & "node$exe"  "$basedir/node_modules/yarn/bin/yarn.js" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:22276) [D...ts.F_OK i 
+   nstead:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-deprecation ...` to show where the warning was 
+created)
+Creating an optimized production build...
+
+Treating warnings as errors because process.env.CI = true.
+Most CI servers set it automatically.
+
+Failed to compile.
+
+[eslint] 
+src\pages\BudgetAgent.js
+  Line 23:9:  The 'fetchBudgets' function makes the dependencies of useEffect Hook (at line 21) change on every render. To fix this, wrap the definition of 'fetchBudgets' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+src\pages\ContentAgent.js
+  Line 21:9:  The 'fetchContent' function makes the dependencies of useEffect Hook (at line 19) change on every render. To fix this, wrap the definition of 'fetchContent' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+src\pages\Dashboard.js
+  Line 29:9:  The 'checkHealth' function makes the dependencies of useEffect Hook (at line 27) change on every render. Move it inside the useEffect callback. Alternatively, wrap the definition of 'checkHealth' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+src\pages\EmailAgent.js
+  Line 24:9:  The 'fetchRegistrations' function makes the dependencies of useEffect Hook (at line 22) change on every render. To fix this, wrap the definition of 'fetchRegistrations' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+src\pages\SchedulerAgent.js
+  Line 20:9:  The 'fetchSchedules' function makes the dependencies of useEffect Hook (at line 18) change on every render. To fix this, wrap the definition of 'fetchSchedules' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+src\pages\VolunteerAgent.js
+  Line 21:9:  The 'fetchVolunteers' function makes the dependencies of useEffect Hook (at line 19) change on every render. To fix this, wrap the definition of 'fetchVolunteers' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

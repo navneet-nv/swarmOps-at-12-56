@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext } from '../App';
 import axios from 'axios';
-import { Hexagon, Zap, Clock, ArrowRight, Activity, Cpu, Sparkles, TrendingUp } from 'lucide-react';
+import { Hexagon, Zap, Clock, ArrowRight, Activity, Cpu, Sparkles, TrendingUp, Mail, CalendarClock, Users } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
@@ -17,22 +17,19 @@ const Dashboard = () => {
     { name: 'Volunteer Coordinator', status: 'idle', icon: Users, color: '#00F0FF' },
   ]);
 
-  // Fix: Adding definitions for Mail, CalendarClock, Users as they were used but not imported
-  const Mail = (props) => <MailIcon {...props} />;
-  const CalendarClock = (props) => <CalendarClockIcon {...props} />;
-  const Users = (props) => <UsersIcon {...props} />;
 
-  useEffect(() => {
-    checkHealth();
-  }, []);
 
-  const checkHealth = async () => {
+  const checkHealth = useCallback(async () => {
     try {
       await axios.get(`${API}/health`);
     } catch (e) {
       console.error('Health check failed', e);
     }
-  };
+  }, [API]);
+
+  useEffect(() => {
+    checkHealth();
+  }, [checkHealth]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -158,16 +155,5 @@ const Dashboard = () => {
     </div>
   );
 };
-
-// Simple Icon Wrappers to prevent breakage if icons change or missing
-const MailIcon = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-);
-const CalendarClockIcon = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></svg>
-);
-const UsersIcon = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-);
 
 export default Dashboard;

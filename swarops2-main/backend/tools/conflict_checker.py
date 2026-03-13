@@ -81,6 +81,27 @@ class ConflictChecker:
                             f"Speaker conflict: {session1.get('speaker')} "
                             f"scheduled for {session1.get('name')} and {session2.get('name')} at overlapping times"
                         )
+                
+                # Check for volunteer conflict
+                if session1.get('volunteer') and session1.get('volunteer') == session2.get('volunteer'):
+                    if ConflictChecker.times_overlap(
+                        session1.get('start_time', '00:00'),
+                        session1.get('end_time', '00:00'),
+                        session2.get('start_time', '00:00'),
+                        session2.get('end_time', '00:00')
+                    ):
+                        conflict = {
+                            'type': 'volunteer_conflict',
+                            'session1': session1.get('name'),
+                            'session2': session2.get('name'),
+                            'volunteer': session1.get('volunteer'),
+                            'time_range': f"{session1.get('start_time')} - {session1.get('end_time')}"
+                        }
+                        conflicts.append(conflict)
+                        conflict_details.append(
+                            f"Volunteer conflict: {session1.get('volunteer')} "
+                            f"assigned to {session1.get('name')} and {session2.get('name')} at overlapping times"
+                        )
         
         return conflicts, conflict_details
     
@@ -91,4 +112,6 @@ class ConflictChecker:
             return f"Suggestion: Move one session to a different room or adjust timing"
         elif conflict['type'] == 'speaker_conflict':
             return f"Suggestion: Reschedule one session to a different time slot"
+        elif conflict['type'] == 'volunteer_conflict':
+            return f"Suggestion: Reassign one session to a different volunteer or shift the time"
         return "Suggestion: Review schedule manually"

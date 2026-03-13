@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { AppContext } from '../App';
 import axios from 'axios';
 import { CreditCard, Plus, DollarSign, AlertCircle, PieChart, TrendingUp, Wallet, ArrowRight, ShieldAlert } from 'lucide-react';
@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { motion } from 'framer-motion';
 
 const BudgetAgent = () => {
   const { currentEventId, userId, API } = useContext(AppContext);
@@ -16,18 +17,18 @@ const BudgetAgent = () => {
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseDescription, setExpenseDescription] = useState('');
 
-  useEffect(() => {
-    fetchBudgets();
-  }, [currentEventId]);
-
-  const fetchBudgets = async () => {
+  const fetchBudgets = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/agent/budget/${currentEventId}`);
       setBudgets(response.data);
     } catch (e) {
       console.error('Failed to fetch budgets', e);
     }
-  };
+  }, [API, currentEventId]);
+
+  useEffect(() => {
+    fetchBudgets();
+  }, [currentEventId, fetchBudgets]);
 
   const addCategory = () => {
     setCategories([...categories, { name: '', allocated: 0 }]);
@@ -88,69 +89,89 @@ const BudgetAgent = () => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="py-10 space-y-10 max-w-7xl mx-auto text-white" data-testid="budget-agent-page">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="py-10 space-y-10 max-w-7xl mx-auto text-foreground" 
+      data-testid="budget-agent-page"
+    >
       {/* Page Header */}
-      <div className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-8 rounded-3xl premium-glass">
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-between bg-card/40 border border-border p-8 rounded-3xl premium-glass gap-6">
         <div className="flex items-center space-x-6">
-          <div className="w-16 h-16 bg-[#D4A017]/10 rounded-2xl flex items-center justify-center border border-[#D4A017]/20 shadow-[0_0_20px_rgba(212,160,23,0.1)]">
-            <TrendingUp className="w-8 h-8 text-[#D4A017]" strokeWidth={1.5} />
+          <div className="w-16 h-16 bg-accent-pink/10 rounded-2xl flex items-center justify-center border border-accent-pink/20 shadow-[0_0_20px_hsl(var(--accent-pink)/0.15)] relative overflow-hidden group">
+            <div className="absolute inset-0 bg-accent-pink/5 group-hover:bg-accent-pink/10 transition-colors" />
+            <TrendingUp className="w-8 h-8 text-accent-pink group-hover:scale-110 transition-transform" strokeWidth={1.5} />
           </div>
           <div>
-            <h1 className="font-heading font-bold text-4xl tracking-tight text-white" data-testid="page-title">
-              Financial Oracle
+            <h1 className="font-heading font-black text-4xl md:text-5xl tracking-tight text-foreground" data-testid="page-title">
+              Budget Agent
             </h1>
-            <p className="font-mono text-xs text-gray-500 uppercase tracking-[0.3em] mt-1" data-testid="page-subtitle">
-              Resource Allocation & Overrun Surveillance
+            <p className="font-mono text-xs text-muted-foreground uppercase tracking-[0.3em] mt-2 flex items-center gap-2" data-testid="page-subtitle">
+              Resource Allocation <span className="text-accent-pink opacity-50">&bull;</span> Overrun Surveillance
             </p>
           </div>
         </div>
         
-        <div className="px-6 py-2 rounded-full border border-green-500/20 bg-green-500/10 text-green-500 flex items-center space-x-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+        <div className="px-6 py-2.5 rounded-full border border-accent-cyan/20 bg-accent-cyan/10 text-accent-cyan flex items-center space-x-3 shadow-[0_0_15px_hsl(var(--accent-cyan)/0.1)]">
+          <div className="w-2.5 h-2.5 rounded-full bg-accent-cyan animate-pulse shadow-[0_0_8px_hsl(var(--accent-cyan))]" />
           <span className="font-mono text-[10px] font-bold uppercase tracking-widest">Reserve Protocol Active</span>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left: Allocation & Controls */}
         <div className="lg:col-span-5 space-y-6">
-          <Card className="premium-glass bg-transparent border-white/5 overflow-hidden">
-            <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4 flex flex-row items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <PieChart className="w-4 h-4 text-[#D4A017]" />
-                <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Config Layer</CardTitle>
+          <Card className="premium-glass bg-card/30 border-border overflow-hidden group hover:border-border/80 transition-all">
+            <CardHeader className="bg-secondary/30 border-b border-border py-5 flex flex-row items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <PieChart className="w-4 h-4 text-accent-cyan" />
+                <CardTitle className="font-heading text-sm uppercase tracking-widest text-foreground">Config Layer</CardTitle>
               </div>
               <Button
                 onClick={addCategory}
                 variant="outline"
-                className="border-white/10 text-white hover:bg-white/5 h-8 px-4 rounded-lg font-mono text-[9px] uppercase tracking-widest"
+                className="border-border text-foreground hover:bg-secondary/80 h-8 px-4 rounded-lg font-mono text-[9px] uppercase tracking-widest"
               >
-                <Plus className="w-3 h-3 mr-1" />
+                <Plus className="w-3 h-3 mr-1.5" />
                 Add Vector
               </Button>
             </CardHeader>
             <CardContent className="p-8 space-y-6">
               <div className="space-y-3">
                 {categories.map((category, index) => (
-                  <div key={index} className="bg-white/[0.02] border border-white/5 p-4 rounded-xl grid grid-cols-2 gap-3 group transition-all hover:bg-white/[0.04]">
-                    <div className="space-y-1.5">
-                      <label className="text-[8px] font-mono text-gray-600 uppercase tracking-widest ml-1">Label</label>
+                  <div key={index} className="bg-secondary/30 border border-border/50 p-4 rounded-xl grid grid-cols-2 gap-4 group-hover:bg-secondary/50 transition-all">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest ml-1">Label</label>
                       <Input
                         placeholder="e.g. Venue"
                         value={category.name}
                         onChange={(e) => updateCategory(index, 'name', e.target.value)}
-                        className="bg-black/40 border-white/10 text-white h-10 rounded-lg text-xs"
+                        className="bg-background/80 border-border/50 text-foreground h-11 rounded-lg text-sm focus:border-accent-cyan/50 focus:ring-1 focus:ring-accent-cyan/50"
                       />
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[8px] font-mono text-gray-600 uppercase tracking-widest ml-1">Cap ($)</label>
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest ml-1">Cap ($)</label>
                       <Input
                         type="number"
                         placeholder="0.00"
                         value={category.allocated}
                         onChange={(e) => updateCategory(index, 'allocated', e.target.value)}
-                        className="bg-black/40 border-white/10 text-white h-10 rounded-lg text-xs"
+                        className="bg-background/80 border-border/50 text-foreground h-11 rounded-lg text-sm focus:border-accent-cyan/50 focus:ring-1 focus:ring-accent-cyan/50"
                       />
                     </div>
                   </div>
@@ -159,7 +180,7 @@ const BudgetAgent = () => {
               
               <Button
                 onClick={handleCreateBudget}
-                className="w-full bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-widest hover:bg-[#F0B020] h-14 rounded-xl shadow-[0_10px_30px_rgba(212,160,23,0.1)] group transition-all"
+                className="w-full bg-accent-cyan text-accent-cyan-foreground font-subheading font-bold uppercase tracking-widest hover:bg-white h-14 rounded-xl shadow-[0_10px_30px_hsl(var(--accent-cyan)/0.15)] transition-all hover:scale-[1.02] active:scale-[0.98] text-neutral-950"
               >
                 Initialize Reserve
               </Button>
@@ -168,10 +189,10 @@ const BudgetAgent = () => {
 
           {/* Active Budgets List */}
           {budgets.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-4 pt-4">
               <div className="flex items-center space-x-2 ml-2">
-                <Wallet className="w-4 h-4 text-gray-500" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold">Active Reserve Units</span>
+                <Wallet className="w-4 h-4 text-muted-foreground" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">Active Reserve Units</span>
               </div>
               <div className="space-y-3">
                 {budgets.map((budget, index) => {
@@ -184,41 +205,44 @@ const BudgetAgent = () => {
                       onClick={() => setSelectedBudget(budget)}
                       className={`group p-6 rounded-3xl border transition-all cursor-pointer relative overflow-hidden ${
                         selectedBudget?.budget_id === budget.budget_id
-                          ? 'premium-glass-hover bg-[#D4A017]/5 border-[#D4A017]/30'
+                          ? 'premium-glass-hover bg-accent-cyan/5 border-accent-cyan/40 shadow-[0_0_20px_hsl(var(--accent-cyan)/0.1)]'
                           : overrun
-                          ? 'bg-red-500/5 border-red-500/20'
-                          : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
+                          ? 'bg-destructive/5 border-destructive/20 hover:border-destructive/40'
+                          : 'bg-secondary/30 border-border hover:bg-secondary/50 hover:border-border/80'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-6 relative z-10">
-                        <div className="font-mono text-[10px] text-white font-bold opacity-60">ID://{budget.budget_id?.slice(-8).toUpperCase()}</div>
+                        <div className="font-mono text-[10px] text-foreground font-bold opacity-60 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-accent-purple opacity-50" />
+                          ID://{budget.budget_id?.slice(-8).toUpperCase()}
+                        </div>
                         {overrun && (
-                          <div className="flex items-center space-x-2 text-red-400 animate-pulse">
+                          <div className="flex items-center space-x-2 text-destructive animate-pulse bg-destructive/10 px-2.5 py-1 rounded-md border border-destructive/20">
                             <ShieldAlert className="w-3 h-3" />
-                            <span className="font-mono text-[9px] font-black uppercase tracking-widest">Overrun Alert</span>
+                            <span className="font-mono text-[9px] font-black uppercase tracking-widest">Overrun</span>
                           </div>
                         )}
                       </div>
                       
                       <div className="grid grid-cols-3 gap-6 relative z-10">
-                        <div className="space-y-1">
-                          <p className="font-mono text-[9px] text-gray-600 uppercase tracking-tighter">Allocated</p>
-                          <p className="font-heading text-xl text-white block">${budget.total_allocated.toLocaleString()}</p>
+                        <div className="space-y-1.5">
+                          <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">Allocated</p>
+                          <p className="font-heading text-xl md:text-2xl text-foreground font-medium block">${budget.total_allocated.toLocaleString()}</p>
                         </div>
-                        <div className="space-y-1">
-                          <p className="font-mono text-[9px] text-gray-600 uppercase tracking-tighter">Utilized</p>
-                          <p className={`font-heading text-xl block ${overrun ? 'text-red-400' : 'text-[#D4A017]'}`}>${(budget.total_spent || 0).toLocaleString()}</p>
+                        <div className="space-y-1.5">
+                          <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">Utilized</p>
+                          <p className={`font-heading text-xl md:text-2xl font-medium block ${overrun ? 'text-destructive' : 'text-accent-cyan'}`}>${(budget.total_spent || 0).toLocaleString()}</p>
                         </div>
-                        <div className="space-y-1">
-                          <p className="font-mono text-[9px] text-gray-600 uppercase tracking-tighter">Delta</p>
-                          <p className="font-heading text-xl text-green-400 block">${(budget.total_allocated - (budget.total_spent || 0)).toLocaleString()}</p>
+                        <div className="space-y-1.5">
+                          <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">Delta</p>
+                          <p className="font-heading text-xl md:text-2xl text-accent-green font-medium block">${(budget.total_allocated - (budget.total_spent || 0)).toLocaleString()}</p>
                         </div>
                       </div>
                       
                       {/* Micro Progress Bar */}
-                      <div className="mt-6 h-1 w-full bg-white/5 rounded-full overflow-hidden relative z-10">
+                      <div className="mt-6 h-1 w-full bg-background/50 rounded-full overflow-hidden relative z-10 border border-border/50">
                          <div 
-                          className={`h-full transition-all duration-1000 ${overrun ? 'bg-red-500' : 'bg-[#D4A017]'}`} 
+                          className={`h-full transition-all duration-1000 ${overrun ? 'bg-destructive shadow-[0_0_10px_hsl(var(--destructive))]' : 'bg-gradient-to-r from-accent-cyan to-accent-purple shadow-[0_0_10px_hsl(var(--accent-cyan)/0.5)]'}`} 
                           style={{ width: `${percent}%` }}
                         />
                       </div>
@@ -232,67 +256,69 @@ const BudgetAgent = () => {
 
         {/* Right: Expense Ledger */}
         <div className="lg:col-span-7">
-          <Card className={`premium-glass bg-transparent border-white/5 h-full flex flex-col transition-all duration-700 ${!selectedBudget ? 'opacity-30 grayscale' : ''}`}>
-             <CardHeader className="bg-white/[0.03] border-b border-white/5 py-4">
+          <Card className={`premium-glass bg-card/30 border-border h-full flex flex-col transition-all duration-700 hover:border-border/80 ${!selectedBudget ? 'opacity-40 grayscale' : ''}`}>
+             <CardHeader className="bg-secondary/30 border-b border-border py-5">
               <div className="flex items-center space-x-3">
-                <CreditCard className="w-4 h-4 text-[#D4A017]" />
-                <CardTitle className="font-heading text-sm uppercase tracking-widest text-white">Expense Entry Logic</CardTitle>
+                <CreditCard className="w-4 h-4 text-accent-pink" />
+                <CardTitle className="font-heading text-sm uppercase tracking-widest text-foreground">Expense Entry Logic</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="p-10 space-y-10">
+            <CardContent className="p-10 space-y-10 flex-1 flex flex-col justify-center">
               {!selectedBudget ? (
-                 <div className="h-96 flex flex-col items-center justify-center text-center opacity-30">
-                  <PieChart className="w-20 h-20 text-gray-600 mb-6" strokeWidth={1} />
-                  <p className="font-heading text-sm text-gray-400 uppercase tracking-[0.3em] max-w-xs">Awaiting reserve unit selection for ledger access</p>
+                 <div className="flex flex-col items-center justify-center text-center opacity-40 space-y-8 min-h-[400px]">
+                  <div className="w-24 h-24 rounded-full bg-secondary/50 border border-border flex items-center justify-center">
+                    <PieChart className="w-10 h-10 text-muted-foreground" strokeWidth={1} />
+                  </div>
+                  <p className="font-heading text-sm text-muted-foreground uppercase tracking-[0.3em] max-w-xs leading-relaxed">Awaiting reserve unit selection for ledger access</p>
                 </div>
               ) : (
                 <div className="space-y-10 animate-in-fade">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                      <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest ml-1 text-gradient-gold">Source Vector</label>
+                      <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-1 text-gradient-cyan">Source Vector</label>
                       <Input
                         value={expenseCategory}
                         onChange={(e) => setExpenseCategory(e.target.value)}
                         placeholder="e.g. Venue"
-                        className="bg-black/40 border-white/10 text-white h-14 rounded-xl focus:border-[#D4A017]/50 text-base"
+                        className="bg-background/60 border-border/80 text-foreground h-16 rounded-xl focus:border-accent-cyan/50 text-base"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest ml-1 text-gradient-gold">Quantum Amount ($)</label>
+                      <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-1 text-gradient-purple">Quantum Amount ($)</label>
                       <Input
                         type="number"
                         value={expenseAmount}
                         onChange={(e) => setExpenseAmount(e.target.value)}
                         placeholder="0.00"
-                        className="bg-black/40 border-white/10 text-white h-14 rounded-xl focus:border-[#D4A017]/50 text-base"
+                        className="bg-background/60 border-border/80 text-foreground h-16 rounded-xl focus:border-accent-purple/50 text-base"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest ml-1">Operation Metadata</label>
+                    <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-1">Operation Metadata</label>
                     <Input
                       value={expenseDescription}
                       onChange={(e) => setExpenseDescription(e.target.value)}
                       placeholder="Transaction details..."
-                      className="bg-black/40 border-white/10 text-white h-14 rounded-xl focus:border-[#D4A017]/50 text-base"
+                      className="bg-background/60 border-border/80 text-foreground h-16 rounded-xl focus:border-primary/50 text-base"
                     />
                   </div>
 
                   <Button
                     onClick={handleAddExpense}
-                    className="w-full bg-[#D4A017] text-black font-subheading font-bold uppercase tracking-[0.2em] hover:bg-[#F0B020] h-20 rounded-2xl text-xl shadow-[0_20px_50px_rgba(212,160,23,0.15)] group transition-all transform active:scale-[0.98]"
+                    className="w-full bg-gradient-to-r from-accent-cyan to-accent-purple text-white font-subheading font-bold uppercase tracking-[0.2em] hover:opacity-90 h-16 rounded-2xl text-lg shadow-[0_15px_30px_hsl(var(--accent-purple)/0.2)] group transition-all transform active:scale-[0.98] border border-white/10"
                   >
                     <DollarSign className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform" />
                     Authorize Transaction
                   </Button>
                   
-                  <div className="pt-8 border-t border-white/5">
+                  <div className="pt-8 border-t border-border mt-auto">
                     <div className="flex items-center space-x-2 mb-4">
-                      <ArrowRight className="w-3 h-3 text-[var(--accent-cyan)]" />
-                      <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent-cyan)]">Unit Constraints</span>
+                      <ArrowRight className="w-3 h-3 text-accent-pink" />
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-accent-pink">Unit Constraints</span>
                     </div>
-                    <p className="font-body text-xs text-gray-500 leading-relaxed italic">
+                    <p className="font-body text-xs text-muted-foreground leading-relaxed font-light">
                       Transactions are monitored by the Neural Integrity Grid. 
                       Unauthorized overruns will trigger immediate administrative overrides.
                     </p>
@@ -302,8 +328,8 @@ const BudgetAgent = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
